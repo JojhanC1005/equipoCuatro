@@ -21,17 +21,19 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
+
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar_home"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="52dp"
         android:background="@android:color/transparent"
-        app:title="Pico Botella"
-        app:titleTextColor="@android:color/white"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Pico Botella"
+        app:titleTextColor="@android:color/white" />
 
     <ImageView
         android:id="@+id/botella_juego"
@@ -43,5 +45,43 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_contador"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/contador_home"
+        android:textColor="@color/orange"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@id/botella_juego"
+        app:layout_constraintBottom_toBottomOf="@id/botella_juego"
+        app:layout_constraintStart_toStartOf="@id/botella_juego"
+        app:layout_constraintEnd_toEndOf="@id/botella_juego"/>
+
+    <ImageButton
+        android:id="@+id/btn_girar_botella"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_marginBottom="56dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Presióname"
+        android:src="@drawable/boton_home"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/texto_presioname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/boton_presioname"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/btn_girar_botella"
+        app:layout_constraintStart_toStartOf="@id/btn_girar_botella"
+        app:layout_constraintEnd_toEndOf="@id/btn_girar_botella" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
