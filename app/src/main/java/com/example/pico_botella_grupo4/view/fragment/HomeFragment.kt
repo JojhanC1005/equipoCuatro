@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.pico_botella_grupo4.R
+import android.view.animation.AnimationUtils
+import android.widget.ImageButton
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -36,6 +38,19 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val btnGirar = view.findViewById<ImageButton>(R.id.btn_girar_botella)
+
+        val animacion = AnimationUtils.loadAnimation(
+            requireContext(),
+            R.anim.boton_home_animado
+        )
+
+        btnGirar.startAnimation(animacion)
     }
 
     companion object {
