@@ -21,19 +21,84 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
-
+    <!--
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar_home"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
         android:layout_marginTop="52dp"
-        android:background="@android:color/transparent"
+        android:background="@drawable/toolbar_background"
+        app:menu="@menu/toolbar_home_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+        -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/toolbar_home"
+        android:layout_width="300dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="42dp"
+        app:cardBackgroundColor="@color/black"
+        app:cardCornerRadius="40dp"
+        app:cardElevation="4dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="Pico Botella"
-        app:titleTextColor="@android:color/white" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btn_calificar"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_margin="4dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/icono_calificar"
+                android:contentDescription="Calificar aplicación"/>
+
+            <ImageButton
+                android:id="@+id/btn_volumen"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_margin="4dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/icono_volume_on"
+                android:contentDescription="Activar o desactivar volumen"/>
+
+            <ImageButton
+                android:id="@+id/btn_instrucciones"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_margin="4dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/icono_instrucciones"
+                android:contentDescription="Ver instrucciones"/>
+
+            <ImageButton
+                android:id="@+id/btn_retos"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_margin="4dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/icono_agregar_reto"
+                android:contentDescription="Agregar reto"/>
+
+            <ImageButton
+                android:id="@+id/btn_compartir"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_margin="4dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/icono_compartir"
+                android:contentDescription="Compartir aplicación"/>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <ImageView
         android:id="@+id/botella_juego"
