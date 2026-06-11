@@ -86,10 +86,22 @@ class HomeFragment : Fragment() {
             Log.d("Toolbar", "Volumen")
         }
         btnInstrucciones.setOnClickListener {
-            Log.d("Toolbar", "Instrucciones")
+            parentFragmentManager.beginTransaction()
+                .replace(
+                    R.id.fragment_container,
+                    InstructionsFragment()
+                )
+                .addToBackStack(null)
+                .commit()
         }
         btnRetos.setOnClickListener {
-            Log.d("Toolbar", "Retos")
+            parentFragmentManager.beginTransaction()
+                .replace(
+                    R.id.fragment_container,
+                    ChallengesFragment()
+                )
+                .addToBackStack(null)
+                .commit()
         }
         btnCompartir.setOnClickListener {
             Log.d("Toolbar", "Compartir")
