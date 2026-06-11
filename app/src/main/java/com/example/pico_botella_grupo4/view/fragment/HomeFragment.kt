@@ -12,6 +12,7 @@ import android.widget.ImageButton
 import android.content.Intent
 import android.net.Uri
 import androidx.core.net.toUri
+import androidx.navigation.fragment.findNavController
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -86,22 +87,14 @@ class HomeFragment : Fragment() {
             Log.d("Toolbar", "Volumen")
         }
         btnInstrucciones.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(
-                    R.id.fragment_container,
-                    InstructionsFragment()
-                )
-                .addToBackStack(null)
-                .commit()
+            findNavController().navigate(
+                R.id.action_home_to_instructions
+            )
         }
         btnRetos.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(
-                    R.id.fragment_container,
-                    ChallengesFragment()
-                )
-                .addToBackStack(null)
-                .commit()
+            findNavController().navigate(
+                R.id.action_home_to_challenges
+            )
         }
         btnCompartir.setOnClickListener {
             Log.d("Toolbar", "Compartir")
