@@ -10,7 +10,6 @@ import com.example.pico_botella_grupo4.R
 import android.view.animation.AnimationUtils
 import android.widget.ImageButton
 import android.content.Intent
-import android.net.Uri
 import androidx.core.net.toUri
 import androidx.navigation.fragment.findNavController
 
