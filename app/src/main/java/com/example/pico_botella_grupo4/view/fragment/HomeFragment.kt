@@ -1,6 +1,7 @@
 package com.example.pico_botella_grupo4.view.fragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,9 @@ import android.view.ViewGroup
 import com.example.pico_botella_grupo4.R
 import android.view.animation.AnimationUtils
 import android.widget.ImageButton
+import android.content.Intent
+import androidx.core.net.toUri
+import androidx.navigation.fragment.findNavController
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -44,6 +48,11 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val btnGirar = view.findViewById<ImageButton>(R.id.btn_girar_botella)
+        val btnCalificar = view.findViewById<ImageButton>(R.id.btn_calificar)
+        val btnVolumen = view.findViewById<ImageButton>(R.id.btn_volumen)
+        val btnInstrucciones = view.findViewById<ImageButton>(R.id.btn_instrucciones)
+        val btnRetos = view.findViewById<ImageButton>(R.id.btn_retos)
+        val btnCompartir = view.findViewById<ImageButton>(R.id.btn_compartir)
 
         val animacion = AnimationUtils.loadAnimation(
             requireContext(),
@@ -51,6 +60,44 @@ class HomeFragment : Fragment() {
         )
 
         btnGirar.startAnimation(animacion)
+
+        btnCalificar.setOnClickListener {
+            try {
+                // Intenta abrir la play store directamente primero
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    "market://details?id=com.nequi.MobileApp".toUri()
+                )
+
+                startActivity(intent)
+
+            } catch (e: Exception) {
+                // Si no existe, la abre con el navegador
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    "https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es".toUri()
+                )
+
+                startActivity(intent)
+            }
+        }
+
+        btnVolumen.setOnClickListener {
+            Log.d("Toolbar", "Volumen")
+        }
+        btnInstrucciones.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_home_to_instructions
+            )
+        }
+        btnRetos.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_home_to_challenges
+            )
+        }
+        btnCompartir.setOnClickListener {
+            Log.d("Toolbar", "Compartir")
+        }
     }
 
     companion object {
