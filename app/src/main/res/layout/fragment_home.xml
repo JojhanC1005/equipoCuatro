@@ -133,12 +133,13 @@
         android:id="@+id/texto_presioname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="@string/boton_presioname"
         android:textColor="@android:color/black"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/btn_girar_botella"
+        app:layout_constraintEnd_toEndOf="@id/btn_girar_botella"
         app:layout_constraintStart_toStartOf="@id/btn_girar_botella"
-        app:layout_constraintEnd_toEndOf="@id/btn_girar_botella" />
+        app:layout_constraintTop_toBottomOf="@id/btn_girar_botella" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
