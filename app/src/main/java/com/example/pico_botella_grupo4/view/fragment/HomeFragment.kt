@@ -62,24 +62,12 @@ class HomeFragment : Fragment() {
         btnGirar.startAnimation(animacion)
 
         btnCalificar.setOnClickListener {
-            try {
-                // Intenta abrir la play store directamente primero
-                val intent = Intent(
-                    Intent.ACTION_VIEW,
-                    "market://details?id=com.nequi.MobileApp".toUri()
-                )
+            val intent = Intent(
+                Intent.ACTION_VIEW,
+                "https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es".toUri()
+            )
 
-                startActivity(intent)
-
-            } catch (e: Exception) {
-                // Si no existe, la abre con el navegador
-                val intent = Intent(
-                    Intent.ACTION_VIEW,
-                    "https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es".toUri()
-                )
-
-                startActivity(intent)
-            }
+            startActivity(intent)
         }
 
         btnVolumen.setOnClickListener {
