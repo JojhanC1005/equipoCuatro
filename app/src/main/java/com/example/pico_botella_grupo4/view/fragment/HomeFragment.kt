@@ -13,8 +13,6 @@ import android.content.Intent
 import androidx.core.net.toUri
 import androidx.navigation.fragment.findNavController
 import android.media.MediaPlayer
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
