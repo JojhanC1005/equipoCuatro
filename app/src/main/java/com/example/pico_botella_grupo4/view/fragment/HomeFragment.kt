@@ -62,30 +62,101 @@ class HomeFragment : Fragment() {
         btnGirar.startAnimation(animacion)
 
         btnCalificar.setOnClickListener {
-            val intent = Intent(
-                Intent.ACTION_VIEW,
-                "https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es".toUri()
-            )
+            animateButton(btnCalificar) {
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    "https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es".toUri()
+                )
 
-            startActivity(intent)
+                startActivity(intent)
+            }
         }
 
         btnVolumen.setOnClickListener {
-            Log.d("Toolbar", "Volumen")
+            animateButton(btnVolumen) {
+                Log.d("Toolbar", "Volumen")
+            }
         }
+
         btnInstrucciones.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_home_to_instructions
-            )
+            animateButton(btnInstrucciones) {
+                findNavController().navigate(
+                    R.id.action_home_to_instructions
+                )
+            }
         }
+
         btnRetos.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_home_to_challenges
-            )
+            animateButton(btnRetos) {
+                findNavController().navigate(
+                    R.id.action_home_to_challenges
+                )
+            }
         }
+
         btnCompartir.setOnClickListener {
-            Log.d("Toolbar", "Compartir")
+            animateButton(btnCompartir) {
+                shareApp()
+            }
         }
+    }
+
+    private fun shareApp() {
+
+        val shareText = """
+        App pico botella
+        
+        ¡Solo los valientes lo juegan!
+        
+        Descárgala aquí:
+        https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es
+    """.trimIndent()
+
+        val intent = Intent().apply {
+
+            action = Intent.ACTION_SEND
+
+            putExtra(
+                Intent.EXTRA_TEXT,
+                shareText
+            )
+
+            type = "text/plain"
+        }
+
+        startActivity(
+            Intent.createChooser(
+                intent,
+                "Compartir aplicación"
+            )
+        )
+    }
+
+    private fun animateButton(
+        button: ImageButton,
+        action: () -> Unit
+    ) {
+
+        button.animate()
+            .scaleX(0.85f)
+            .scaleY(0.85f)
+            .setDuration(75)
+            .withEndAction {
+
+                button.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(75)
+                    .withEndAction {
+
+                        action()
+
+                    }
+                    .start()
+
+            }
+            .start()
+
     }
 
     companion object {
