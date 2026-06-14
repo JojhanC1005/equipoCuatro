@@ -12,6 +12,7 @@ import android.widget.ImageButton
 import android.content.Intent
 import androidx.core.net.toUri
 import androidx.navigation.fragment.findNavController
+import android.media.MediaPlayer
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,6 +28,8 @@ class HomeFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var mediaPlayer: MediaPlayer? = null
+    private var audioActivo = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,10 +45,20 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        mediaPlayer = MediaPlayer.create(
+            requireContext(),
+            R.raw.musica_fondo
+        )
+
+        mediaPlayer?.isLooping = true
+        mediaPlayer?.start()
 
         val btnGirar = view.findViewById<ImageButton>(R.id.btn_girar_botella)
         val btnCalificar = view.findViewById<ImageButton>(R.id.btn_calificar)
@@ -178,4 +191,6 @@ class HomeFragment : Fragment() {
                 }
             }
     }
+
+
 }
