@@ -9,6 +9,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.pico_botella_grupo4.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import androidx.appcompat.app.AlertDialog
 
 class ChallengesFragment : Fragment() {
 
@@ -40,5 +42,18 @@ class ChallengesFragment : Fragment() {
         toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
+
+        //Add challenge button
+        val fab = view.findViewById<FloatingActionButton>(R.id.fabAddChallenge)
+
+        fab.setOnClickListener {
+
+            AlertDialog.Builder(requireContext())
+                .setTitle("placeholder")
+                .setMessage("")
+                .setPositiveButton("Aceptar", null)
+                .show()
+        }
+
     }
 }
