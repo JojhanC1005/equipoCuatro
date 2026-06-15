@@ -114,6 +114,11 @@ class HomeFragment : Fragment() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        mediaPlayer?.pause()
+    }
+
     private fun shareApp() {
 
         val shareText = """
