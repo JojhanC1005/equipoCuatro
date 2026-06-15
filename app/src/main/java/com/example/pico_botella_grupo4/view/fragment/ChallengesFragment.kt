@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.pico_botella_grupo4.R
 
 class ChallengesFragment : Fragment() {
@@ -28,7 +30,15 @@ class ChallengesFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Changing title
         val title = view.findViewById<TextView>(R.id.tvToolbarTitle)
         title.text = getString(R.string.challenges_title)
+
+        // Configuring back button
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+
+        toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 }
