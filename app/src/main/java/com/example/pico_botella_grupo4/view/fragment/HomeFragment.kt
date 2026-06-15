@@ -114,11 +114,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        mediaPlayer?.start()
-    }
-
     override fun onPause() {
         super.onPause()
         mediaPlayer?.pause()
