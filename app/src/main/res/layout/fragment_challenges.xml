@@ -10,7 +10,7 @@
     tools:context=".view.fragment.HomeFragment">
 
     <include
-        android:id="@+id/contentToolbar"
+        android:id="@+id/contentToolbarChallenges"
         layout="@layout/toolbar"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,10 +23,20 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:layout_marginEnd="24dp"
-        android:contentDescription="Agregar reto"
+        android:contentDescription="@string/agregar_reto"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:backgroundTint="@color/orange"
         app:srcCompat="@drawable/ic_add"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        tools:listitem="@layout/item_challenge"
+        app:layout_constraintTop_toBottomOf="@+id/contentToolbarChallenges"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
