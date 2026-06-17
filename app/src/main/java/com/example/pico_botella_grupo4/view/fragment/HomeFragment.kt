@@ -15,33 +15,13 @@ import android.media.MediaPlayer
 import androidx.fragment.app.viewModels
 import com.example.pico_botella_grupo4.viewmodel.HomeViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//private const val ARG_PARAM1 = "param1"
-//private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    //private var param1: String? = null
-    //private var param2: String? = null
     private var mediaPlayer: MediaPlayer? = null
     private val viewModel: HomeViewModel by viewModels()
 
-    //override fun onCreate(savedInstanceState: Bundle?) {
-      //  super.onCreate(savedInstanceState)
-        //arguments?.let {
-            //param1 = it.getString(ARG_PARAM1)
-            //param2 = it.getString(ARG_PARAM2)
-        //}
-    //}
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -53,13 +33,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mediaPlayer = MediaPlayer.create(
-            requireContext(),
-            R.raw.musica_fondo
-        )
-
-        mediaPlayer?.isLooping = true
-        mediaPlayer?.start()
+        // Crear y configurar mediaPlayer para la música del juego
+        setupMediaPlayer()
 
         val btnGirar = view.findViewById<ImageButton>(R.id.btn_girar_botella)
         val btnCalificar = view.findViewById<ImageButton>(R.id.btn_calificar)
@@ -68,82 +43,20 @@ class HomeFragment : Fragment() {
         val btnRetos = view.findViewById<ImageButton>(R.id.btn_retos)
         val btnCompartir = view.findViewById<ImageButton>(R.id.btn_compartir)
 
-        viewModel.soundEnabled.observe(
-            viewLifecycleOwner
-        ) { enabled ->
-            if(enabled){
-                btnVolumen.setImageResource(
-                    R.drawable.icono_volume_on
-                )
+        // Configurar observer sobre el botón de volumen para controlar música
+        setUpObservers(btnVolumen)
 
-                if(mediaPlayer?.isPlaying == false) {
-                    mediaPlayer?.start()
-                }
-//                mediaPlayer?.isPlaying?.let {
-//                    if(!it){
-//                        mediaPlayer?.start()
-//                    }
-//                }
-            }
-            else {
-                btnVolumen.setImageResource(
-                    R.drawable.icono_volume_off
-                )
-
-                if(mediaPlayer?.isPlaying == true) {
-                    mediaPlayer?.pause()
-                }
-//                mediaPlayer?.isPlaying?.let {
-//                    mediaPlayer?.pause()
-//                }
-            }
-        }
-
-        val animacion = AnimationUtils.loadAnimation(
-            requireContext(),
-            R.anim.boton_home_animado
+        // Configurar listeners para funcionalidad de los botones
+        setUpListeners(
+            btnCalificar,
+            btnVolumen,
+            btnInstrucciones,
+            btnRetos,
+            btnCompartir
         )
 
-        btnGirar.startAnimation(animacion)
-
-        btnCalificar.setOnClickListener {
-            animateButton(btnCalificar) {
-                val intent = Intent(
-                    Intent.ACTION_VIEW,
-                    "https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es".toUri()
-                )
-
-                startActivity(intent)
-            }
-        }
-
-        btnVolumen.setOnClickListener {
-            animateButton(btnVolumen) {
-                viewModel.toggleSound()
-            }
-        }
-
-        btnInstrucciones.setOnClickListener {
-            animateButton(btnInstrucciones) {
-                findNavController().navigate(
-                    R.id.action_home_to_instructions
-                )
-            }
-        }
-
-        btnRetos.setOnClickListener {
-            animateButton(btnRetos) {
-                findNavController().navigate(
-                    R.id.action_home_to_challenges
-                )
-            }
-        }
-
-        btnCompartir.setOnClickListener {
-            animateButton(btnCompartir) {
-                shareApp()
-            }
-        }
+        // Iniciar animación del botón de girar
+        startDynamicButton(btnGirar)
     }
 
     override fun onDestroyView() {
@@ -162,6 +75,99 @@ class HomeFragment : Fragment() {
 
         if(viewModel.soundEnabled.value == true){
             mediaPlayer?.start()
+        }
+    }
+
+    // Funciones auxiliares
+    private fun setupMediaPlayer() {
+
+        mediaPlayer = MediaPlayer.create(
+            requireContext(),
+            R.raw.musica_fondo
+        )
+
+        mediaPlayer?.isLooping = true
+        mediaPlayer?.start()
+    }
+
+    private fun setUpObservers(
+        btnVolumen : ImageButton
+    ) {
+        viewModel.soundEnabled.observe(
+            viewLifecycleOwner
+        ) { enabled ->
+
+            if(enabled){
+                btnVolumen.setImageResource(
+                    R.drawable.icono_volume_on
+                )
+
+                if(mediaPlayer?.isPlaying == false) {
+                    mediaPlayer?.start()
+                }
+            }
+            else {
+                btnVolumen.setImageResource(
+                    R.drawable.icono_volume_off
+                )
+
+                if(mediaPlayer?.isPlaying == true) {
+                    mediaPlayer?.pause()
+                }
+            }
+        }
+    }
+
+    private fun setUpListeners(
+        btnCalificar: ImageButton,
+        btnVolumen: ImageButton,
+        btnInstrucciones: ImageButton,
+        btnRetos: ImageButton,
+        btnCompartir: ImageButton
+    ) {
+
+        btnCalificar.setOnClickListener {
+            // Dirige a la app de nequi en la play store
+            animateButton(btnCalificar) {
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    "https://play.google.com/store/apps/details?id=com.nequi.MobileApp&hl=es_419&gl=es".toUri()
+                )
+
+                startActivity(intent)
+            }
+        }
+
+        btnVolumen.setOnClickListener {
+            // Activa y desactiva el sonido del juego
+            animateButton(btnVolumen) {
+                viewModel.toggleSound()
+            }
+        }
+
+        btnInstrucciones.setOnClickListener {
+            // Dirige al apartado de instrucciones del juego
+            animateButton(btnInstrucciones) {
+                findNavController().navigate(
+                    R.id.action_home_to_instructions
+                )
+            }
+        }
+
+        btnRetos.setOnClickListener {
+            // Dirige al apartado de retos del juego
+            animateButton(btnRetos) {
+                findNavController().navigate(
+                    R.id.action_home_to_challenges
+                )
+            }
+        }
+
+        btnCompartir.setOnClickListener {
+            // Permite compartir la aplicación por whatsApp u otros medios
+            animateButton(btnCompartir) {
+                shareApp()
+            }
         }
     }
 
@@ -212,35 +218,22 @@ class HomeFragment : Fragment() {
                     .scaleY(1f)
                     .setDuration(75)
                     .withEndAction {
-
                         action()
-
                     }
                     .start()
-
             }
             .start()
-
     }
 
-//    companion object {
-//        /**
-//         * Use this factory method to create a new instance of
-//         * this fragment using the provided parameters.
-//         *
-//         * @param param1 Parameter 1.
-//         * @param param2 Parameter 2.
-//         * @return A new instance of fragment HomeFragment.
-//         */
-//        // TODO: Rename and change types and number of parameters
-//        @JvmStatic
-//        fun newInstance(param1: String, param2: String) =
-//            HomeFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-//                }
-//            }
-//    }
+    private fun startDynamicButton(
+        btnGirar : ImageButton
+    ) {
+        val animacion = AnimationUtils.loadAnimation(
+            requireContext(),
+            R.anim.boton_home_animado
+        )
+
+        btnGirar.startAnimation(animacion)
+    }
 
 }
