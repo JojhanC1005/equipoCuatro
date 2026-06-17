@@ -1,7 +1,6 @@
 package com.example.pico_botella_grupo4.view.fragment
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,11 +12,13 @@ import android.content.Intent
 import androidx.core.net.toUri
 import androidx.navigation.fragment.findNavController
 import android.media.MediaPlayer
+import androidx.fragment.app.viewModels
+import com.example.pico_botella_grupo4.viewmodel.HomeViewModel
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+//private const val ARG_PARAM1 = "param1"
+//private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -26,18 +27,18 @@ private const val ARG_PARAM2 = "param2"
  */
 class HomeFragment : Fragment() {
     // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    //private var param1: String? = null
+    //private var param2: String? = null
     private var mediaPlayer: MediaPlayer? = null
-    private var audioActivo = true
+    private val viewModel: HomeViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    //override fun onCreate(savedInstanceState: Bundle?) {
+      //  super.onCreate(savedInstanceState)
+        //arguments?.let {
+            //param1 = it.getString(ARG_PARAM1)
+            //param2 = it.getString(ARG_PARAM2)
+        //}
+    //}
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,6 +68,37 @@ class HomeFragment : Fragment() {
         val btnRetos = view.findViewById<ImageButton>(R.id.btn_retos)
         val btnCompartir = view.findViewById<ImageButton>(R.id.btn_compartir)
 
+        viewModel.soundEnabled.observe(
+            viewLifecycleOwner
+        ) { enabled ->
+            if(enabled){
+                btnVolumen.setImageResource(
+                    R.drawable.icono_volume_on
+                )
+
+                if(mediaPlayer?.isPlaying == false) {
+                    mediaPlayer?.start()
+                }
+//                mediaPlayer?.isPlaying?.let {
+//                    if(!it){
+//                        mediaPlayer?.start()
+//                    }
+//                }
+            }
+            else {
+                btnVolumen.setImageResource(
+                    R.drawable.icono_volume_off
+                )
+
+                if(mediaPlayer?.isPlaying == true) {
+                    mediaPlayer?.pause()
+                }
+//                mediaPlayer?.isPlaying?.let {
+//                    mediaPlayer?.pause()
+//                }
+            }
+        }
+
         val animacion = AnimationUtils.loadAnimation(
             requireContext(),
             R.anim.boton_home_animado
@@ -87,7 +119,7 @@ class HomeFragment : Fragment() {
 
         btnVolumen.setOnClickListener {
             animateButton(btnVolumen) {
-                Log.d("Toolbar", "Volumen")
+                viewModel.toggleSound()
             }
         }
 
@@ -114,9 +146,23 @@ class HomeFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        mediaPlayer?.release()
+        mediaPlayer = null
+        super.onDestroyView()
+    }
+
     override fun onPause() {
         super.onPause()
         mediaPlayer?.pause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if(viewModel.soundEnabled.value == true){
+            mediaPlayer?.start()
+        }
     }
 
     private fun shareApp() {
@@ -177,25 +223,24 @@ class HomeFragment : Fragment() {
 
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
-
+//    companion object {
+//        /**
+//         * Use this factory method to create a new instance of
+//         * this fragment using the provided parameters.
+//         *
+//         * @param param1 Parameter 1.
+//         * @param param2 Parameter 2.
+//         * @return A new instance of fragment HomeFragment.
+//         */
+//        // TODO: Rename and change types and number of parameters
+//        @JvmStatic
+//        fun newInstance(param1: String, param2: String) =
+//            HomeFragment().apply {
+//                arguments = Bundle().apply {
+//                    putString(ARG_PARAM1, param1)
+//                    putString(ARG_PARAM2, param2)
+//                }
+//            }
+//    }
 
 }
