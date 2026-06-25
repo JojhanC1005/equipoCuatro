@@ -4,9 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.material3.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -87,11 +91,53 @@ class ChallengesFragment : Fragment() {
 
             onEdit = { challenge ->
 
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Editar reto")
-                    .setMessage(challenge.description)
-                    .setPositiveButton("Aceptar", null)
-                    .show()
+                val dialogView = layoutInflater.inflate(
+                    R.layout.dialog_edit_challenge,
+                    null
+                )
+
+                val editText =
+                    dialogView.findViewById<EditText>(
+                        R.id.etChallenge
+                    )
+
+                val btnCancel =
+                    dialogView.findViewById<Button>(
+                        R.id.btnCancel
+                    )
+
+                val btnSave =
+                    dialogView.findViewById<Button>(
+                        R.id.btnSave
+                    )
+
+                editText.setText(
+                    challenge.description
+                )
+
+                val dialog = AlertDialog.Builder(
+                    requireContext()
+                )
+                    .setView(dialogView)
+                    .create()
+
+                dialog.setCanceledOnTouchOutside(false)
+
+                btnCancel.setOnClickListener {
+                    dialog.dismiss()
+                }
+
+                btnSave.setOnClickListener {
+
+                    val newDescription =
+                        editText.text.toString()
+
+                    // Aquí irá el update en Room
+
+                    dialog.dismiss()
+                }
+
+                dialog.show()
             },
 
             onDelete = { challenge ->
