@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.material3.Button
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -60,12 +61,79 @@ class ChallengesFragment : Fragment() {
         // Add challenge button
         val fab = view.findViewById<FloatingActionButton>(R.id.fabAddChallenge)
 
+//        fab.setOnClickListener {
+//            AlertDialog.Builder(requireContext())
+//                .setTitle("placeholder")
+//                .setMessage("")
+//                .setPositiveButton("Aceptar", null)
+//                .show()
+//        }
         fab.setOnClickListener {
-            AlertDialog.Builder(requireContext())
-                .setTitle("placeholder")
-                .setMessage("")
-                .setPositiveButton("Aceptar", null)
-                .show()
+
+            val dialogView = layoutInflater.inflate(
+                R.layout.dialog_add_challenge,
+                null
+            )
+
+            val editText =
+                dialogView.findViewById<EditText>(
+                    R.id.etChallenge
+                )
+
+            val btnCancel =
+                dialogView.findViewById<Button>(
+                    R.id.btnCancel
+                )
+
+            val btnSave =
+                dialogView.findViewById<Button>(
+                    R.id.btnSave
+                )
+
+            btnSave.isEnabled = false
+            btnSave.alpha = 0.5f
+
+            editText.addTextChangedListener {
+
+                val hasText =
+                    !it.isNullOrBlank()
+
+                btnSave.isEnabled = hasText
+
+                btnSave.alpha =
+                    if (hasText) 1f else 0.5f
+            }
+
+            val dialog = AlertDialog.Builder(
+                requireContext()
+            )
+                .setView(dialogView)
+                .create()
+
+            dialog.setCanceledOnTouchOutside(false)
+
+            btnCancel.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            btnSave.setOnClickListener {
+
+                val description =
+                    editText.text.toString().trim()
+
+                if (description.isNotEmpty()) {
+
+                    // Aquí irá el insert real
+
+                    dialog.dismiss()
+                }
+            }
+
+            dialog.show()
+
+            dialog.window?.setBackgroundDrawableResource(
+                android.R.color.transparent
+            )
         }
 
         recycler()
