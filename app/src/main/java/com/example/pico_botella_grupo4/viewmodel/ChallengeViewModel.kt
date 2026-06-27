@@ -1,7 +1,7 @@
 package com.example.pico_botella_grupo4.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.pico_botella_grupo4.model.Challenge
 import com.example.pico_botella_grupo4.repository.ChallengeRepository
@@ -11,7 +11,7 @@ class ChallengeViewModel(
     private val repository: ChallengeRepository
 ) : ViewModel() {
 
-    val challenges =
+    val challenges: LiveData<List<Challenge>> =
         repository.getAllChallenges()
 
     fun insert(description: String) {

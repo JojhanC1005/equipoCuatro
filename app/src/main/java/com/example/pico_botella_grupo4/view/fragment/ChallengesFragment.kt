@@ -147,8 +147,7 @@ class ChallengesFragment : Fragment() {
 
                 if (description.isNotEmpty()) {
 
-                    // Aquí irá el insert real
-
+                    viewModel.insert(description)
                     dialog.dismiss()
                 }
             }
@@ -221,10 +220,14 @@ class ChallengesFragment : Fragment() {
 
                 btnSave.setOnClickListener {
 
-                    val newDescription =
-                        editText.text.toString()
+                    val newDescription = editText.text.toString()
 
-                    // Aquí irá el update en Room
+                    // Update en Room
+                    viewModel.update(
+                        challenge.copy(
+                            description = newDescription
+                        )
+                    )
 
                     dialog.dismiss()
                 }
