@@ -1,7 +1,8 @@
-package com.example.pico_botella_grupo4.view
+package com.example.pico_botella_grupo4.view.viewholder
 
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pico_botella_grupo4.databinding.ItemChallengeBinding
+import com.example.pico_botella_grupo4.model.Challenge
 
 class RecyclerViewHolder(
     binding: ItemChallengeBinding

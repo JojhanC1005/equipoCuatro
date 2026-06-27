@@ -1,30 +1,36 @@
 package com.example.pico_botella_grupo4.view.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
-import androidx.compose.material3.Button
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pico_botella_grupo4.R
+import com.example.pico_botella_grupo4.data.DatabaseProvider
 import com.example.pico_botella_grupo4.databinding.FragmentChallengesBinding
+import com.example.pico_botella_grupo4.repository.ChallengeRepository
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.example.pico_botella_grupo4.view.Challenge
-import com.example.pico_botella_grupo4.view.RecyclerAdapter
+import com.example.pico_botella_grupo4.view.adapter.RecyclerAdapter
+import com.example.pico_botella_grupo4.viewmodel.ChallengeViewModel
+import com.example.pico_botella_grupo4.viewmodel.ChallengeViewModelFactory
 
 class ChallengesFragment : Fragment() {
 
     private var _binding: FragmentChallengesBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var viewModel: ChallengeViewModel
+    private lateinit var adapter: RecyclerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +52,24 @@ class ChallengesFragment : Fragment() {
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Obtener el DAO de Room
+        val dao = DatabaseProvider
+            .getDatabase(requireContext())
+            .challengeDao()
+
+        // Comunicar el repository con Room
+        val repository = ChallengeRepository(dao)
+
+        val factory = ChallengeViewModelFactory(repository)
+
+        // Crear instancia del ChallengeViewModel
+        viewModel = ViewModelProvider(
+            this,
+            factory
+        )[ChallengeViewModel::class.java]
+
+        Log.d("MVVM", viewModel.toString())
 
         // Changing title
         val title = view.findViewById<TextView>(R.id.tvToolbarTitle)
@@ -137,25 +161,25 @@ class ChallengesFragment : Fragment() {
         }
 
         recycler()
+
+        viewModel.challenges.observe(viewLifecycleOwner) { challenges ->
+            adapter.updateChallenges(challenges)
+        }
     }
 
     private fun recycler() {
 
-        val listaChallenge = mutableListOf(
-            Challenge("Hee hee hee."),
-            Challenge("Did you REALLY think killing me would make a DIFFERENCE?"),
-            Challenge("No."),
-            Challenge("Every time you load your SAVE, I'll come back."),
-            Challenge("And every time you try to get a happy ending..."),
-            Challenge("I'll be there to tear it away!")
-        )
+//        val listaChallenge = mutableListOf(
+//            Challenge("Hee hee hee."),
+//            Challenge("Did you REALLY think killing me would make a DIFFERENCE?"),
+//            Challenge("No."),
+//            Challenge("Every time you load your SAVE, I'll come back."),
+//            Challenge("And every time you try to get a happy ending..."),
+//            Challenge("I'll be there to tear it away!")
+//        )
+        adapter = RecyclerAdapter(
 
-        binding.recyclerview.layoutManager =
-            LinearLayoutManager(requireContext())
-
-        val adapter = RecyclerAdapter(
-
-            listaChallenge,
+            emptyList(),
 
             onEdit = { challenge ->
 
@@ -218,6 +242,77 @@ class ChallengesFragment : Fragment() {
                     .show()
             }
         )
+
+        binding.recyclerview.adapter = adapter
+
+        binding.recyclerview.layoutManager =
+            LinearLayoutManager(requireContext())
+
+//        val adapter = RecyclerAdapter(
+//
+//            listaChallenge,
+//
+//            onEdit = { challenge ->
+//
+//                val dialogView = layoutInflater.inflate(
+//                    R.layout.dialog_edit_challenge,
+//                    null
+//                )
+//
+//                val editText =
+//                    dialogView.findViewById<EditText>(
+//                        R.id.etChallenge
+//                    )
+//
+//                val btnCancel =
+//                    dialogView.findViewById<Button>(
+//                        R.id.btnCancel
+//                    )
+//
+//                val btnSave =
+//                    dialogView.findViewById<Button>(
+//                        R.id.btnSave
+//                    )
+//
+//                editText.setText(
+//                    challenge.description
+//                )
+//
+//                val dialog = AlertDialog.Builder(
+//                    requireContext()
+//                )
+//                    .setView(dialogView)
+//                    .create()
+//
+//                dialog.setCanceledOnTouchOutside(false)
+//
+//                btnCancel.setOnClickListener {
+//                    dialog.dismiss()
+//                }
+//
+//                btnSave.setOnClickListener {
+//
+//                    val newDescription =
+//                        editText.text.toString()
+//
+//                    // Aquí irá el update en Room
+//
+//                    dialog.dismiss()
+//                }
+//
+//                dialog.show()
+//            },
+//
+//            onDelete = { challenge ->
+//
+//                AlertDialog.Builder(requireContext())
+//                    .setTitle("Eliminar reto")
+//                    .setMessage("¿Deseas eliminar este reto?")
+//                    .setPositiveButton("Sí", null)
+//                    .setNegativeButton("No", null)
+//                    .show()
+//            }
+//        )
 
         binding.recyclerview.adapter = adapter
     }
