@@ -1,12 +1,15 @@
-package com.example.pico_botella_grupo4.view
+package com.example.pico_botella_grupo4.view.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pico_botella_grupo4.databinding.ItemChallengeBinding
+import com.example.pico_botella_grupo4.model.Challenge
+import com.example.pico_botella_grupo4.view.viewholder.RecyclerViewHolder
 
 class RecyclerAdapter(
-    private val challengeList: MutableList<Challenge>,
+    private var challengeList: List<Challenge>,
     private val onEdit: (Challenge) -> Unit,
     private val onDelete: (Challenge) -> Unit
 ) : RecyclerView.Adapter<RecyclerViewHolder>() {
@@ -41,5 +44,13 @@ class RecyclerAdapter(
             onEdit,
             onDelete
         )
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateChallenges(newChallenges: List<Challenge>) {
+
+        challengeList = newChallenges
+
+        notifyDataSetChanged()
     }
 }
