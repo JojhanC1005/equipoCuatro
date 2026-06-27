@@ -23,15 +23,9 @@ import com.example.pico_botella_grupo4.databinding.FragmentChallengesBinding
 import com.example.pico_botella_grupo4.model.Challenge
 import com.example.pico_botella_grupo4.repository.ChallengeRepository
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-<<<<<<< HEAD
-import com.example.pico_botella_grupo4.view.Challenge
-import com.example.pico_botella_grupo4.view.RecyclerAdapter
-import android.widget.EditText
-=======
 import com.example.pico_botella_grupo4.view.adapter.RecyclerAdapter
 import com.example.pico_botella_grupo4.viewmodel.ChallengeViewModel
 import com.example.pico_botella_grupo4.viewmodel.ChallengeViewModelFactory
->>>>>>> develop
 
 class ChallengesFragment : Fragment() {
 
@@ -81,41 +75,10 @@ class ChallengesFragment : Fragment() {
 //        )
         adapter = RecyclerAdapter(
 
-<<<<<<< HEAD
-        binding.recyclerview.layoutManager =
-            LinearLayoutManager(requireContext())
-
-
-        val adapter = RecyclerAdapter(
-
-            listaChallenge,
-
-            onEdit = { challenge ->
-
-                val editText = EditText(requireContext())
-
-                editText.setText(challenge.description)
-
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Editar reto")
-                    .setView(editText)
-
-                    .setPositiveButton("Guardar") { _, _ ->
-
-                        challenge.description =
-                            editText.text.toString()
-
-                        binding.recyclerview.adapter?.notifyDataSetChanged()
-                    }
-
-                    .setNegativeButton("Cancelar", null)
-                    .show()
-=======
             emptyList(),
 
             onEdit = { challenge ->
                 showEditChallengeDialog(challenge)
->>>>>>> develop
             },
 
             onDelete = { challenge ->

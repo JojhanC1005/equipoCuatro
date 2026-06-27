@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.pico_botella_grupo4.repository.ChallengeRepository
 
+
 class ChallengeViewModelFactory(
     private val repository: ChallengeRepository
 ) : ViewModelProvider.Factory {
