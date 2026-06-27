@@ -17,7 +17,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pico_botella_grupo4.R
 import com.example.pico_botella_grupo4.data.DatabaseProvider
+import com.example.pico_botella_grupo4.databinding.DialogAddChallengeBinding
+import com.example.pico_botella_grupo4.databinding.DialogEditChallengeBinding
 import com.example.pico_botella_grupo4.databinding.FragmentChallengesBinding
+import com.example.pico_botella_grupo4.model.Challenge
 import com.example.pico_botella_grupo4.repository.ChallengeRepository
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.example.pico_botella_grupo4.view.adapter.RecyclerAdapter
@@ -53,6 +56,54 @@ class ChallengesFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        setUpViewModel()
+        setupToolbar()
+        setupFab()
+        setUpRecycler()
+        observeChallenges()
+    }
+
+    private fun setUpRecycler() {
+
+//        val listaChallenge = mutableListOf(
+//            Challenge("Hee hee hee."),
+//            Challenge("Did you REALLY think killing me would make a DIFFERENCE?"),
+//            Challenge("No."),
+//            Challenge("Every time you load your SAVE, I'll come back."),
+//            Challenge("And every time you try to get a happy ending..."),
+//            Challenge("I'll be there to tear it away!")
+//        )
+        adapter = RecyclerAdapter(
+
+            emptyList(),
+
+            onEdit = { challenge ->
+                showEditChallengeDialog(challenge)
+            },
+
+            onDelete = { challenge ->
+
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Eliminar reto")
+                    .setMessage("¿Deseas eliminar este reto?")
+                    .setPositiveButton("Sí", null)
+                    .setNegativeButton("No", null)
+                    .show()
+            }
+        )
+
+        binding.recyclerview.layoutManager =
+            LinearLayoutManager(requireContext())
+
+        binding.recyclerview.adapter = adapter
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun setUpViewModel() {
         // Obtener el DAO de Room
         val dao = DatabaseProvider
             .getDatabase(requireContext())
@@ -68,260 +119,117 @@ class ChallengesFragment : Fragment() {
             this,
             factory
         )[ChallengeViewModel::class.java]
+    }
 
-        Log.d("MVVM", viewModel.toString())
+    private fun setupToolbar() {
 
-        // Changing title
-        val title = view.findViewById<TextView>(R.id.tvToolbarTitle)
-        title.text = getString(R.string.challenges_title)
+        binding.contentToolbarChallenges.tvToolbarTitle.text =
+            getString(R.string.challenges_title)
 
-        // Configuring back button
-        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
-
-        toolbar.setNavigationOnClickListener {
+        binding.contentToolbarChallenges.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
+    }
 
-        // Add challenge button
-        val fab = view.findViewById<FloatingActionButton>(R.id.fabAddChallenge)
+    private fun setupFab() {
 
-//        fab.setOnClickListener {
-//            AlertDialog.Builder(requireContext())
-//                .setTitle("placeholder")
-//                .setMessage("")
-//                .setPositiveButton("Aceptar", null)
-//                .show()
-//        }
-        fab.setOnClickListener {
+        binding.fabAddChallenge.setOnClickListener {
+            showAddChallengeDialog()
+        }
+    }
 
-            val dialogView = layoutInflater.inflate(
-                R.layout.dialog_add_challenge,
-                null
-            )
+    private fun showAddChallengeDialog() {
 
-            val editText =
-                dialogView.findViewById<EditText>(
-                    R.id.etChallenge
-                )
+        val dialogBinding = DialogAddChallengeBinding.inflate(layoutInflater)
 
-            val btnCancel =
-                dialogView.findViewById<Button>(
-                    R.id.btnCancel
-                )
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
+            .create()
 
-            val btnSave =
-                dialogView.findViewById<Button>(
-                    R.id.btnSave
-                )
+        dialog.setCanceledOnTouchOutside(false)
 
-            btnSave.isEnabled = false
-            btnSave.alpha = 0.5f
+        // Desactivar botón guardar por defecto
+        dialogBinding.btnSave.isEnabled = false
+        dialogBinding.btnSave.alpha = 0.5f
 
-            editText.addTextChangedListener {
+        dialogBinding.etChallenge.addTextChangedListener {
 
-                val hasText =
-                    !it.isNullOrBlank()
+            val hasText = !it.isNullOrBlank()
 
-                btnSave.isEnabled = hasText
+            dialogBinding.btnSave.isEnabled = hasText
+            dialogBinding.btnSave.alpha = if (hasText) 1f else 0.5f
+        }
 
-                btnSave.alpha =
-                    if (hasText) 1f else 0.5f
-            }
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
 
-            val dialog = AlertDialog.Builder(
-                requireContext()
-            )
-                .setView(dialogView)
-                .create()
+        dialogBinding.btnSave.setOnClickListener {
 
-            dialog.setCanceledOnTouchOutside(false)
+            val description =
+                dialogBinding.etChallenge.text.toString().trim()
 
-            btnCancel.setOnClickListener {
+            if (description.isNotEmpty()) {
+                viewModel.insert(description)
                 dialog.dismiss()
             }
-
-            btnSave.setOnClickListener {
-
-                val description =
-                    editText.text.toString().trim()
-
-                if (description.isNotEmpty()) {
-
-                    viewModel.insert(description)
-                    dialog.dismiss()
-                }
-            }
-
-            dialog.show()
-
-            dialog.window?.setBackgroundDrawableResource(
-                android.R.color.transparent
-            )
         }
 
-        recycler()
+        dialog.show()
 
-        viewModel.challenges.observe(viewLifecycleOwner) { challenges ->
-            adapter.updateChallenges(challenges)
-        }
+        dialog.window?.setBackgroundDrawableResource(
+            android.R.color.transparent
+        )
     }
 
-    private fun recycler() {
+    private fun showEditChallengeDialog(challenge: Challenge) {
+        val dialogBinding =
+            DialogEditChallengeBinding.inflate(layoutInflater)
 
-//        val listaChallenge = mutableListOf(
-//            Challenge("Hee hee hee."),
-//            Challenge("Did you REALLY think killing me would make a DIFFERENCE?"),
-//            Challenge("No."),
-//            Challenge("Every time you load your SAVE, I'll come back."),
-//            Challenge("And every time you try to get a happy ending..."),
-//            Challenge("I'll be there to tear it away!")
-//        )
-        adapter = RecyclerAdapter(
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
+            .create()
 
-            emptyList(),
+        dialog.setCanceledOnTouchOutside(false)
 
-            onEdit = { challenge ->
-
-                val dialogView = layoutInflater.inflate(
-                    R.layout.dialog_edit_challenge,
-                    null
-                )
-
-                val editText =
-                    dialogView.findViewById<EditText>(
-                        R.id.etChallenge
-                    )
-
-                val btnCancel =
-                    dialogView.findViewById<Button>(
-                        R.id.btnCancel
-                    )
-
-                val btnSave =
-                    dialogView.findViewById<Button>(
-                        R.id.btnSave
-                    )
-
-                editText.setText(
-                    challenge.description
-                )
-
-                val dialog = AlertDialog.Builder(
-                    requireContext()
-                )
-                    .setView(dialogView)
-                    .create()
-
-                dialog.setCanceledOnTouchOutside(false)
-
-                btnCancel.setOnClickListener {
-                    dialog.dismiss()
-                }
-
-                btnSave.setOnClickListener {
-
-                    val newDescription = editText.text.toString()
-
-                    // Update en Room
-                    viewModel.update(
-                        challenge.copy(
-                            description = newDescription
-                        )
-                    )
-
-                    dialog.dismiss()
-                }
-
-                dialog.show()
-            },
-
-            onDelete = { challenge ->
-
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Eliminar reto")
-                    .setMessage("¿Deseas eliminar este reto?")
-                    .setPositiveButton("Sí", null)
-                    .setNegativeButton("No", null)
-                    .show()
-            }
+        dialogBinding.etChallenge.setText(
+            challenge.description
         )
 
-        binding.recyclerview.adapter = adapter
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
 
-        binding.recyclerview.layoutManager =
-            LinearLayoutManager(requireContext())
+        dialogBinding.btnSave.setOnClickListener {
 
-//        val adapter = RecyclerAdapter(
-//
-//            listaChallenge,
-//
-//            onEdit = { challenge ->
-//
-//                val dialogView = layoutInflater.inflate(
-//                    R.layout.dialog_edit_challenge,
-//                    null
-//                )
-//
-//                val editText =
-//                    dialogView.findViewById<EditText>(
-//                        R.id.etChallenge
-//                    )
-//
-//                val btnCancel =
-//                    dialogView.findViewById<Button>(
-//                        R.id.btnCancel
-//                    )
-//
-//                val btnSave =
-//                    dialogView.findViewById<Button>(
-//                        R.id.btnSave
-//                    )
-//
-//                editText.setText(
-//                    challenge.description
-//                )
-//
-//                val dialog = AlertDialog.Builder(
-//                    requireContext()
-//                )
-//                    .setView(dialogView)
-//                    .create()
-//
-//                dialog.setCanceledOnTouchOutside(false)
-//
-//                btnCancel.setOnClickListener {
-//                    dialog.dismiss()
-//                }
-//
-//                btnSave.setOnClickListener {
-//
-//                    val newDescription =
-//                        editText.text.toString()
-//
-//                    // Aquí irá el update en Room
-//
-//                    dialog.dismiss()
-//                }
-//
-//                dialog.show()
-//            },
-//
-//            onDelete = { challenge ->
-//
-//                AlertDialog.Builder(requireContext())
-//                    .setTitle("Eliminar reto")
-//                    .setMessage("¿Deseas eliminar este reto?")
-//                    .setPositiveButton("Sí", null)
-//                    .setNegativeButton("No", null)
-//                    .show()
-//            }
-//        )
+            val newDescription =
+                dialogBinding.etChallenge.text.toString().trim()
 
-        binding.recyclerview.adapter = adapter
+            if (newDescription.isNotEmpty()) {
+
+                viewModel.update(
+                    challenge.copy(
+                        description = newDescription
+                    )
+                )
+
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+
+        dialog.window?.setBackgroundDrawableResource(
+            android.R.color.transparent
+        )
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun observeChallenges() {
+
+        viewModel.challenges.observe(
+            viewLifecycleOwner
+        ) {
+            adapter.updateChallenges(it)
+        }
     }
 }
