@@ -15,6 +15,7 @@ import com.example.pico_botella_grupo4.databinding.FragmentChallengesBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.example.pico_botella_grupo4.view.Challenge
 import com.example.pico_botella_grupo4.view.RecyclerAdapter
+import android.widget.EditText
 
 class ChallengesFragment : Fragment() {
 
@@ -81,16 +82,30 @@ class ChallengesFragment : Fragment() {
         binding.recyclerview.layoutManager =
             LinearLayoutManager(requireContext())
 
+
         val adapter = RecyclerAdapter(
 
             listaChallenge,
 
             onEdit = { challenge ->
 
+                val editText = EditText(requireContext())
+
+                editText.setText(challenge.description)
+
                 AlertDialog.Builder(requireContext())
                     .setTitle("Editar reto")
-                    .setMessage(challenge.description)
-                    .setPositiveButton("Aceptar", null)
+                    .setView(editText)
+
+                    .setPositiveButton("Guardar") { _, _ ->
+
+                        challenge.description =
+                            editText.text.toString()
+
+                        binding.recyclerview.adapter?.notifyDataSetChanged()
+                    }
+
+                    .setNegativeButton("Cancelar", null)
                     .show()
             },
 
