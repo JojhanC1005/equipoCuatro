@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pico_botella_grupo4.R
 import com.example.pico_botella_grupo4.data.DatabaseProvider
 import com.example.pico_botella_grupo4.databinding.DialogAddChallengeBinding
+import com.example.pico_botella_grupo4.databinding.DialogDeleteChallengeBinding
 import com.example.pico_botella_grupo4.databinding.DialogEditChallengeBinding
 import com.example.pico_botella_grupo4.databinding.FragmentChallengesBinding
 import com.example.pico_botella_grupo4.model.Challenge
@@ -65,14 +66,6 @@ class ChallengesFragment : Fragment() {
 
     private fun setUpRecycler() {
 
-//        val listaChallenge = mutableListOf(
-//            Challenge("Hee hee hee."),
-//            Challenge("Did you REALLY think killing me would make a DIFFERENCE?"),
-//            Challenge("No."),
-//            Challenge("Every time you load your SAVE, I'll come back."),
-//            Challenge("And every time you try to get a happy ending..."),
-//            Challenge("I'll be there to tear it away!")
-//        )
         adapter = RecyclerAdapter(
 
             emptyList(),
@@ -82,13 +75,7 @@ class ChallengesFragment : Fragment() {
             },
 
             onDelete = { challenge ->
-
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Eliminar reto")
-                    .setMessage("¿Deseas eliminar este reto?")
-                    .setPositiveButton("Sí", null)
-                    .setNegativeButton("No", null)
-                    .show()
+                showDeleteDialog(challenge)
             }
         )
 
@@ -215,6 +202,39 @@ class ChallengesFragment : Fragment() {
 
                 dialog.dismiss()
             }
+        }
+
+        dialog.show()
+
+        dialog.window?.setBackgroundDrawableResource(
+            android.R.color.transparent
+        )
+    }
+
+    private fun showDeleteDialog(
+        challenge: Challenge
+    ) {
+
+        val dialogBinding =
+            DialogDeleteChallengeBinding.inflate(layoutInflater)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
+            .create()
+
+        dialog.setCanceledOnTouchOutside(false)
+
+        dialogBinding.tvChallengeDescription.text = challenge.description
+
+        dialogBinding.tvNo.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogBinding.tvYes.setOnClickListener {
+
+            viewModel.delete(challenge)
+
+            dialog.dismiss()
         }
 
         dialog.show()
