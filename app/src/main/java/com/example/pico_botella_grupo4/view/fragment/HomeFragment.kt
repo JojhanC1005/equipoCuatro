@@ -20,6 +20,8 @@ import android.animation.ObjectAnimator
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import kotlin.random.Random
+import android.os.CountDownTimer
+import android.widget.TextView
 
 class HomeFragment : Fragment() {
     private var mediaPlayer: MediaPlayer? = null
@@ -29,6 +31,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var botellaJuego: ImageView
 
+    private lateinit var txtContador: TextView
     private var currentBottleRotation = 0f
 
     override fun onCreateView(
@@ -57,6 +60,8 @@ class HomeFragment : Fragment() {
         val btnRetos = view.findViewById<ImageButton>(R.id.btn_retos)
         val btnCompartir = view.findViewById<ImageButton>(R.id.btn_compartir)
         botellaJuego = view.findViewById(R.id.botella_juego)
+        txtContador = view.findViewById(R.id.txt_contador)
+        txtContador.visibility = View.GONE
 
         // Configurar observer sobre el botón de volumen para controlar música
         setUpObservers(btnVolumen)
@@ -301,12 +306,42 @@ class HomeFragment : Fragment() {
 
                     bottleSoundPlayer?.pause()
                     bottleSoundPlayer?.seekTo(0)
+
+                    startCountdown()
                 }
 
             })
 
             start()
         }
+
+    }
+
+    private fun startCountdown() {
+
+        txtContador.visibility = View.VISIBLE
+
+        object : CountDownTimer(4000, 1000) {
+
+            override fun onTick(millisUntilFinished: Long) {
+
+                val seconds = (millisUntilFinished / 1000).toInt()
+
+                txtContador.text = seconds.toString()
+            }
+
+            override fun onFinish() {
+
+                txtContador.text = "0"
+
+                txtContador.postDelayed({
+
+                    txtContador.visibility = View.GONE
+
+                }, 1000)
+            }
+
+        }.start()
 
     }
 
