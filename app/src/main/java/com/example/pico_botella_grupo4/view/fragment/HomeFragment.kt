@@ -22,6 +22,11 @@ import android.widget.ImageView
 import kotlin.random.Random
 import android.os.CountDownTimer
 import android.widget.TextView
+import android.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
+import com.example.pico_botella_grupo4.data.DatabaseProvider
+import com.example.pico_botella_grupo4.repository.ChallengeRepository
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
     private var mediaPlayer: MediaPlayer? = null
@@ -336,13 +341,37 @@ class HomeFragment : Fragment() {
 
                 txtContador.postDelayed({
 
-                    txtContador.visibility = View.GONE
+                    showRandomChallengeDialog()
 
                 }, 1000)
             }
 
         }.start()
 
+    }
+
+    private fun showRandomChallengeDialog() {
+
+        txtContador.visibility = View.GONE
+
+        val dao = DatabaseProvider.getDatabase(requireContext()).challengeDao()
+        val repository = ChallengeRepository(dao)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            val challenge = repository.getRandomChallenge()
+
+            val message = challenge?.description
+                ?: "No hay retos disponibles. Agrega retos para poder jugar."
+
+            AlertDialog.Builder(requireContext())
+                .setTitle("Reto aleatorio")
+                .setMessage(message)
+                .setPositiveButton("Cerrar") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
     }
 
 }
