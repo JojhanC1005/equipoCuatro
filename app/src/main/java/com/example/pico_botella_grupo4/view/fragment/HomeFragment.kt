@@ -14,10 +14,20 @@ import androidx.navigation.fragment.findNavController
 import android.media.MediaPlayer
 import androidx.fragment.app.viewModels
 import com.example.pico_botella_grupo4.viewmodel.HomeViewModel
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
+import android.view.animation.DecelerateInterpolator
+import android.widget.ImageView
+import kotlin.random.Random
 
 class HomeFragment : Fragment() {
     private var mediaPlayer: MediaPlayer? = null
     private val viewModel: HomeViewModel by viewModels()
+
+    private lateinit var botellaJuego: ImageView
+
+    private var currentBottleRotation = 0f
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,6 +52,7 @@ class HomeFragment : Fragment() {
         val btnInstrucciones = view.findViewById<ImageButton>(R.id.btn_instrucciones)
         val btnRetos = view.findViewById<ImageButton>(R.id.btn_retos)
         val btnCompartir = view.findViewById<ImageButton>(R.id.btn_compartir)
+        botellaJuego = view.findViewById(R.id.botella_juego)
 
         // Configurar observer sobre el botón de volumen para controlar música
         setUpObservers(btnVolumen)
@@ -54,6 +65,10 @@ class HomeFragment : Fragment() {
             btnRetos,
             btnCompartir
         )
+
+        btnGirar.setOnClickListener {
+            spinBottle()
+        }
 
         // Iniciar animación del botón de girar
         startDynamicButton(btnGirar)
@@ -234,6 +249,43 @@ class HomeFragment : Fragment() {
         )
 
         btnGirar.startAnimation(animacion)
+    }
+
+    private fun spinBottle() {
+
+        val randomAngle = Random.nextInt(0, 360)
+
+        val turns = Random.nextInt(6, 10) * 360
+
+        val finalRotation = currentBottleRotation + turns + randomAngle
+
+        val duration = Random.nextLong(3000L, 5000L)
+
+        ObjectAnimator.ofFloat(
+            botellaJuego,
+            View.ROTATION,
+            currentBottleRotation,
+            finalRotation
+        ).apply {
+
+            this.duration = duration
+
+            interpolator = DecelerateInterpolator()
+
+            addListener(object : AnimatorListenerAdapter() {
+
+                override fun onAnimationEnd(animation: Animator) {
+
+                    currentBottleRotation = finalRotation % 360
+
+                    botellaJuego.rotation = currentBottleRotation
+                }
+
+            })
+
+            start()
+        }
+
     }
 
 }
