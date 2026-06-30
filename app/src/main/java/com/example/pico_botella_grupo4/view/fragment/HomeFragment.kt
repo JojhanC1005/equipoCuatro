@@ -23,6 +23,8 @@ import kotlin.random.Random
 
 class HomeFragment : Fragment() {
     private var mediaPlayer: MediaPlayer? = null
+
+    private var bottleSoundPlayer: MediaPlayer? = null
     private val viewModel: HomeViewModel by viewModels()
 
     private lateinit var botellaJuego: ImageView
@@ -45,6 +47,8 @@ class HomeFragment : Fragment() {
 
         // Crear y configurar mediaPlayer para la música del juego
         setupMediaPlayer()
+
+        setupBottleSoundPlayer()
 
         val btnGirar = view.findViewById<ImageButton>(R.id.btn_girar_botella)
         val btnCalificar = view.findViewById<ImageButton>(R.id.btn_calificar)
@@ -77,12 +81,15 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         mediaPlayer?.release()
         mediaPlayer = null
+        bottleSoundPlayer?.release()
+        bottleSoundPlayer = null
         super.onDestroyView()
     }
 
     override fun onPause() {
         super.onPause()
         mediaPlayer?.pause()
+        bottleSoundPlayer?.pause()
     }
 
     override fun onResume() {
@@ -103,6 +110,15 @@ class HomeFragment : Fragment() {
 
         mediaPlayer?.isLooping = true
         mediaPlayer?.start()
+    }
+
+    private fun setupBottleSoundPlayer() {
+        bottleSoundPlayer = MediaPlayer.create(
+            requireContext(),
+            R.raw.sonido_botella
+        )
+
+        bottleSoundPlayer?.isLooping = true
     }
 
     private fun setUpObservers(
@@ -253,6 +269,9 @@ class HomeFragment : Fragment() {
 
     private fun spinBottle() {
 
+        bottleSoundPlayer?.seekTo(0)
+        bottleSoundPlayer?.start()
+
         val randomAngle = Random.nextInt(0, 360)
 
         val turns = Random.nextInt(6, 10) * 360
@@ -279,6 +298,9 @@ class HomeFragment : Fragment() {
                     currentBottleRotation = finalRotation % 360
 
                     botellaJuego.rotation = currentBottleRotation
+
+                    bottleSoundPlayer?.pause()
+                    bottleSoundPlayer?.seekTo(0)
                 }
 
             })
