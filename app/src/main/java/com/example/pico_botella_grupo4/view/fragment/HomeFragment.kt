@@ -38,6 +38,9 @@ class HomeFragment : Fragment() {
 
     private lateinit var txtContador: TextView
     private var currentBottleRotation = 0f
+    private var isGameRunning = false
+
+    private lateinit var btnGirar: ImageButton
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,7 +61,7 @@ class HomeFragment : Fragment() {
 
         setupBottleSoundPlayer()
 
-        val btnGirar = view.findViewById<ImageButton>(R.id.btn_girar_botella)
+        btnGirar = view.findViewById(R.id.btn_girar_botella)
         val btnCalificar = view.findViewById<ImageButton>(R.id.btn_calificar)
         val btnVolumen = view.findViewById<ImageButton>(R.id.btn_volumen)
         val btnInstrucciones = view.findViewById<ImageButton>(R.id.btn_instrucciones)
@@ -67,6 +70,7 @@ class HomeFragment : Fragment() {
         botellaJuego = view.findViewById(R.id.botella_juego)
         txtContador = view.findViewById(R.id.txt_contador)
         txtContador.visibility = View.GONE
+
 
         // Configurar observer sobre el botón de volumen para controlar música
         setUpObservers(btnVolumen)
@@ -279,6 +283,13 @@ class HomeFragment : Fragment() {
 
     private fun spinBottle() {
 
+        if (isGameRunning) return
+
+        isGameRunning = true
+
+        btnGirar.clearAnimation()
+        btnGirar.visibility = View.GONE
+
         bottleSoundPlayer?.seekTo(0)
         bottleSoundPlayer?.start()
 
@@ -369,9 +380,22 @@ class HomeFragment : Fragment() {
                 .setMessage(message)
                 .setPositiveButton("Cerrar") { dialog, _ ->
                     dialog.dismiss()
+                    finishGame()
+                }
+                .setOnCancelListener {
+                    finishGame()
                 }
                 .show()
         }
+    }
+
+    private fun finishGame() {
+
+        isGameRunning = false
+
+        btnGirar.visibility = View.VISIBLE
+
+        startDynamicButton(btnGirar)
     }
 
 }
