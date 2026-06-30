@@ -39,6 +39,7 @@ class HomeFragment : Fragment() {
     private lateinit var txtContador: TextView
     private var currentBottleRotation = 0f
     private var isGameRunning = false
+    private var shouldResumeMusicAfterChallenge = false
 
     private lateinit var btnGirar: ImageButton
 
@@ -109,7 +110,7 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        if(viewModel.soundEnabled.value == true){
+        if (viewModel.soundEnabled.value == true && !isGameRunning) {
             mediaPlayer?.start()
         }
     }
@@ -147,7 +148,7 @@ class HomeFragment : Fragment() {
                     R.drawable.icono_volume_on
                 )
 
-                if(mediaPlayer?.isPlaying == false) {
+                if (mediaPlayer?.isPlaying == false && !isGameRunning) {
                     mediaPlayer?.start()
                 }
             }
@@ -287,6 +288,11 @@ class HomeFragment : Fragment() {
 
         isGameRunning = true
 
+        shouldResumeMusicAfterChallenge =
+            viewModel.soundEnabled.value == true && mediaPlayer?.isPlaying == true
+
+        mediaPlayer?.pause()
+
         btnGirar.clearAnimation()
         btnGirar.visibility = View.GONE
 
@@ -396,6 +402,12 @@ class HomeFragment : Fragment() {
         btnGirar.visibility = View.VISIBLE
 
         startDynamicButton(btnGirar)
+
+        if (shouldResumeMusicAfterChallenge && viewModel.soundEnabled.value == true) {
+            mediaPlayer?.start()
+        }
+
+        shouldResumeMusicAfterChallenge = false
     }
 
 }
