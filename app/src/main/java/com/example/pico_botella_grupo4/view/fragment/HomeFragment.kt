@@ -23,16 +23,19 @@ import kotlin.random.Random
 import android.os.CountDownTimer
 import android.widget.TextView
 import android.app.AlertDialog
-import androidx.lifecycle.lifecycleScope
 import com.example.pico_botella_grupo4.data.DatabaseProvider
 import com.example.pico_botella_grupo4.repository.ChallengeRepository
-import kotlinx.coroutines.launch
+import com.example.pico_botella_grupo4.viewmodel.HomeViewModelFactory
 
 class HomeFragment : Fragment() {
     private var mediaPlayer: MediaPlayer? = null
 
     private var bottleSoundPlayer: MediaPlayer? = null
-    private val viewModel: HomeViewModel by viewModels()
+    private val viewModel: HomeViewModel by viewModels {
+        val dao = DatabaseProvider.getDatabase(requireContext()).challengeDao()
+        val repository = ChallengeRepository(dao)
+        HomeViewModelFactory(repository)
+    }
 
     private lateinit var botellaJuego: ImageView
 
@@ -75,6 +78,8 @@ class HomeFragment : Fragment() {
 
         // Configurar observer sobre el botón de volumen para controlar música
         setUpObservers(btnVolumen)
+
+        setUpChallengeObserver()
 
         // Configurar listeners para funcionalidad de los botones
         setUpListeners(
@@ -368,15 +373,30 @@ class HomeFragment : Fragment() {
     }
 
     private fun showRandomChallengeDialog() {
-
         txtContador.visibility = View.GONE
+        viewModel.loadRandomChallenge()
+    }
 
-        val dao = DatabaseProvider.getDatabase(requireContext()).challengeDao()
-        val repository = ChallengeRepository(dao)
+    private fun finishGame() {
 
-        viewLifecycleOwner.lifecycleScope.launch {
+        isGameRunning = false
 
-            val challenge = repository.getRandomChallenge()
+        btnGirar.visibility = View.VISIBLE
+
+        startDynamicButton(btnGirar)
+
+        if (shouldResumeMusicAfterChallenge && viewModel.soundEnabled.value == true) {
+            mediaPlayer?.start()
+        }
+
+        shouldResumeMusicAfterChallenge = false
+    }
+
+    private fun setUpChallengeObserver() {
+
+        viewModel.randomChallenge.observe(
+            viewLifecycleOwner
+        ) { challenge ->
 
             val message = challenge?.description
                 ?: "No hay retos disponibles. Agrega retos para poder jugar."
@@ -393,21 +413,6 @@ class HomeFragment : Fragment() {
                 }
                 .show()
         }
-    }
-
-    private fun finishGame() {
-
-        isGameRunning = false
-
-        btnGirar.visibility = View.VISIBLE
-
-        startDynamicButton(btnGirar)
-
-        if (shouldResumeMusicAfterChallenge && viewModel.soundEnabled.value == true) {
-            mediaPlayer?.start()
-        }
-
-        shouldResumeMusicAfterChallenge = false
     }
 
 }
