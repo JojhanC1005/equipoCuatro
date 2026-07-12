@@ -14,10 +14,34 @@ import androidx.navigation.fragment.findNavController
 import android.media.MediaPlayer
 import androidx.fragment.app.viewModels
 import com.example.pico_botella_grupo4.viewmodel.HomeViewModel
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
+import android.view.animation.DecelerateInterpolator
+import android.widget.ImageView
+import kotlin.random.Random
+import android.os.CountDownTimer
+import android.widget.TextView
+import android.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
+import com.example.pico_botella_grupo4.data.DatabaseProvider
+import com.example.pico_botella_grupo4.repository.ChallengeRepository
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
     private var mediaPlayer: MediaPlayer? = null
+
+    private var bottleSoundPlayer: MediaPlayer? = null
     private val viewModel: HomeViewModel by viewModels()
+
+    private lateinit var botellaJuego: ImageView
+
+    private lateinit var txtContador: TextView
+    private var currentBottleRotation = 0f
+    private var isGameRunning = false
+    private var shouldResumeMusicAfterChallenge = false
+
+    private lateinit var btnGirar: ImageButton
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,12 +60,18 @@ class HomeFragment : Fragment() {
         // Crear y configurar mediaPlayer para la música del juego
         setupMediaPlayer()
 
-        val btnGirar = view.findViewById<ImageButton>(R.id.btn_girar_botella)
+        setupBottleSoundPlayer()
+
+        btnGirar = view.findViewById(R.id.btn_girar_botella)
         val btnCalificar = view.findViewById<ImageButton>(R.id.btn_calificar)
         val btnVolumen = view.findViewById<ImageButton>(R.id.btn_volumen)
         val btnInstrucciones = view.findViewById<ImageButton>(R.id.btn_instrucciones)
         val btnRetos = view.findViewById<ImageButton>(R.id.btn_retos)
         val btnCompartir = view.findViewById<ImageButton>(R.id.btn_compartir)
+        botellaJuego = view.findViewById(R.id.botella_juego)
+        txtContador = view.findViewById(R.id.txt_contador)
+        txtContador.visibility = View.GONE
+
 
         // Configurar observer sobre el botón de volumen para controlar música
         setUpObservers(btnVolumen)
@@ -55,6 +85,10 @@ class HomeFragment : Fragment() {
             btnCompartir
         )
 
+        btnGirar.setOnClickListener {
+            spinBottle()
+        }
+
         // Iniciar animación del botón de girar
         startDynamicButton(btnGirar)
     }
@@ -62,18 +96,21 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         mediaPlayer?.release()
         mediaPlayer = null
+        bottleSoundPlayer?.release()
+        bottleSoundPlayer = null
         super.onDestroyView()
     }
 
     override fun onPause() {
         super.onPause()
         mediaPlayer?.pause()
+        bottleSoundPlayer?.pause()
     }
 
     override fun onResume() {
         super.onResume()
 
-        if(viewModel.soundEnabled.value == true){
+        if (viewModel.soundEnabled.value == true && !isGameRunning) {
             mediaPlayer?.start()
         }
     }
@@ -90,6 +127,15 @@ class HomeFragment : Fragment() {
         mediaPlayer?.start()
     }
 
+    private fun setupBottleSoundPlayer() {
+        bottleSoundPlayer = MediaPlayer.create(
+            requireContext(),
+            R.raw.sonido_botella
+        )
+
+        bottleSoundPlayer?.isLooping = true
+    }
+
     private fun setUpObservers(
         btnVolumen : ImageButton
     ) {
@@ -102,7 +148,7 @@ class HomeFragment : Fragment() {
                     R.drawable.icono_volume_on
                 )
 
-                if(mediaPlayer?.isPlaying == false) {
+                if (mediaPlayer?.isPlaying == false && !isGameRunning) {
                     mediaPlayer?.start()
                 }
             }
@@ -234,6 +280,134 @@ class HomeFragment : Fragment() {
         )
 
         btnGirar.startAnimation(animacion)
+    }
+
+    private fun spinBottle() {
+
+        if (isGameRunning) return
+
+        isGameRunning = true
+
+        shouldResumeMusicAfterChallenge =
+            viewModel.soundEnabled.value == true && mediaPlayer?.isPlaying == true
+
+        mediaPlayer?.pause()
+
+        btnGirar.clearAnimation()
+        btnGirar.visibility = View.GONE
+
+        bottleSoundPlayer?.seekTo(0)
+        bottleSoundPlayer?.start()
+
+        val randomAngle = Random.nextInt(0, 360)
+
+        val turns = Random.nextInt(6, 10) * 360
+
+        val finalRotation = currentBottleRotation + turns + randomAngle
+
+        val duration = Random.nextLong(3000L, 5000L)
+
+        ObjectAnimator.ofFloat(
+            botellaJuego,
+            View.ROTATION,
+            currentBottleRotation,
+            finalRotation
+        ).apply {
+
+            this.duration = duration
+
+            interpolator = DecelerateInterpolator()
+
+            addListener(object : AnimatorListenerAdapter() {
+
+                override fun onAnimationEnd(animation: Animator) {
+
+                    currentBottleRotation = finalRotation % 360
+
+                    botellaJuego.rotation = currentBottleRotation
+
+                    bottleSoundPlayer?.pause()
+                    bottleSoundPlayer?.seekTo(0)
+
+                    startCountdown()
+                }
+
+            })
+
+            start()
+        }
+
+    }
+
+    private fun startCountdown() {
+
+        txtContador.visibility = View.VISIBLE
+
+        object : CountDownTimer(4000, 1000) {
+
+            override fun onTick(millisUntilFinished: Long) {
+
+                val seconds = (millisUntilFinished / 1000).toInt()
+
+                txtContador.text = seconds.toString()
+            }
+
+            override fun onFinish() {
+
+                txtContador.text = "0"
+
+                txtContador.postDelayed({
+
+                    showRandomChallengeDialog()
+
+                }, 1000)
+            }
+
+        }.start()
+
+    }
+
+    private fun showRandomChallengeDialog() {
+
+        txtContador.visibility = View.GONE
+
+        val dao = DatabaseProvider.getDatabase(requireContext()).challengeDao()
+        val repository = ChallengeRepository(dao)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            val challenge = repository.getRandomChallenge()
+
+            val message = challenge?.description
+                ?: "No hay retos disponibles. Agrega retos para poder jugar."
+
+            AlertDialog.Builder(requireContext())
+                .setTitle("Reto aleatorio")
+                .setMessage(message)
+                .setPositiveButton("Cerrar") { dialog, _ ->
+                    dialog.dismiss()
+                    finishGame()
+                }
+                .setOnCancelListener {
+                    finishGame()
+                }
+                .show()
+        }
+    }
+
+    private fun finishGame() {
+
+        isGameRunning = false
+
+        btnGirar.visibility = View.VISIBLE
+
+        startDynamicButton(btnGirar)
+
+        if (shouldResumeMusicAfterChallenge && viewModel.soundEnabled.value == true) {
+            mediaPlayer?.start()
+        }
+
+        shouldResumeMusicAfterChallenge = false
     }
 
 }
