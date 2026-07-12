@@ -26,6 +26,8 @@ import android.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.example.pico_botella_grupo4.data.DatabaseProvider
 import com.example.pico_botella_grupo4.repository.ChallengeRepository
+import com.example.pico_botella_grupo4.viewmodel.ChallengeViewModel
+import com.example.pico_botella_grupo4.viewmodel.PokemonViewModel
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {

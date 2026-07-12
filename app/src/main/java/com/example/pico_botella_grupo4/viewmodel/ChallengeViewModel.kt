@@ -39,4 +39,11 @@ class ChallengeViewModel(
             repository.delete(challenge)
         }
     }
+
+    fun getRandomChallenge() {
+
+        viewModelScope.launch {
+            repository.getRandomChallenge()
+        }
+    }
 }
