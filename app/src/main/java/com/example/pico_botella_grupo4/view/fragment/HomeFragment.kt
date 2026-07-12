@@ -1,5 +1,8 @@
 package com.example.pico_botella_grupo4.view.fragment
 
+import android.graphics.Color
+import android.widget.Button
+import com.bumptech.glide.Glide
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -23,14 +26,23 @@ import kotlin.random.Random
 import android.os.CountDownTimer
 import android.widget.TextView
 import android.app.AlertDialog
+import android.util.Log
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import com.example.pico_botella_grupo4.data.DatabaseProvider
-import com.example.pico_botella_grupo4.repository.ChallengeRepository
+import com.example.pico_botella_grupo4.model.Challenge
+import com.example.pico_botella_grupo4.model.Pokemon
 import com.example.pico_botella_grupo4.viewmodel.ChallengeViewModel
 import com.example.pico_botella_grupo4.viewmodel.PokemonViewModel
 import kotlinx.coroutines.launch
+import androidx.core.graphics.drawable.toDrawable
+import com.example.pico_botella_grupo4.repository.ChallengeRepository
+import com.example.pico_botella_grupo4.viewmodel.ChallengeViewModelFactory
 
 class HomeFragment : Fragment() {
+    private val pokemonViewModel: PokemonViewModel by viewModels()
+
+    private lateinit var challengeViewModel: ChallengeViewModel
     private var mediaPlayer: MediaPlayer? = null
 
     private var bottleSoundPlayer: MediaPlayer? = null
@@ -58,6 +70,19 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val dao = DatabaseProvider
+            .getDatabase(requireContext())
+            .challengeDao()
+
+        val repository = ChallengeRepository(dao)
+
+        val factory = ChallengeViewModelFactory(repository)
+
+        challengeViewModel = ViewModelProvider(
+            this,
+            factory
+        )[ChallengeViewModel::class.java]
 
         // Crear y configurar mediaPlayer para la música del juego
         setupMediaPlayer()
@@ -360,7 +385,13 @@ class HomeFragment : Fragment() {
 
                 txtContador.postDelayed({
 
-                    showRandomChallengeDialog()
+                    viewLifecycleOwner.lifecycleScope.launch {
+
+                        val challenge = challengeViewModel.getRandomChallenge()
+                        val pokemon = pokemonViewModel.getRandomPokemon()
+
+                        showRandomChallengeDialog(challenge, pokemon)
+                    }
 
                 }, 1000)
             }
@@ -369,32 +400,71 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun showRandomChallengeDialog() {
+    private fun showRandomChallengeDialog(
+        challenge: Challenge?,
+        pokemon: Pokemon
+    ) {
 
         txtContador.visibility = View.GONE
 
-        val dao = DatabaseProvider.getDatabase(requireContext()).challengeDao()
-        val repository = ChallengeRepository(dao)
+        val dialogView = layoutInflater.inflate(
+            R.layout.dialog_challenge,
+            null
+        )
 
-        viewLifecycleOwner.lifecycleScope.launch {
+        val tvChallenge =
+            dialogView.findViewById<TextView>(R.id.tvChallenge)
 
-            val challenge = repository.getRandomChallenge()
+        val imgPokemon =
+            dialogView.findViewById<ImageView>(R.id.imgPokemon)
 
-            val message = challenge?.description
-                ?: "No hay retos disponibles. Agrega retos para poder jugar."
+        val btnClose =
+            dialogView.findViewById<Button>(R.id.btnClose)
 
-            AlertDialog.Builder(requireContext())
-                .setTitle("Reto aleatorio")
-                .setMessage(message)
-                .setPositiveButton("Cerrar") { dialog, _ ->
-                    dialog.dismiss()
-                    finishGame()
-                }
-                .setOnCancelListener {
-                    finishGame()
-                }
-                .show()
+        Log.d("DIALOG", "Challenge recibido: $challenge")
+        Log.d("DIALOG", "Pokemon recibido: ${pokemon.name}")
+        Log.d("DIALOG", "Imagen: ${pokemon.img}")
+
+        // Mostrar el reto o el mensaje si no hay retos
+        if (challenge == null) {
+
+            tvChallenge.text =
+                "No hay retos disponibles. Agrega algunos retos para poder jugar."
+
+        } else {
+
+            tvChallenge.text = challenge.description
+            Log.d("DIALOG", "Descripcion: ${challenge.description}")
+
         }
+
+        // Mostrar la imagen del Pokémon
+        val imageUrl = pokemon.img.replace("http://", "https://")
+
+        Glide.with(requireContext())
+            .load(imageUrl)
+            .into(imgPokemon)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawable(
+            Color.TRANSPARENT.toDrawable()
+        )
+
+        // Botón Cerrar
+        btnClose.setOnClickListener {
+            dialog.dismiss()
+            finishGame()
+        }
+
+        // Si el usuario presiona atrás o toca fuera del diálogo
+        dialog.setOnCancelListener {
+            finishGame()
+        }
+
+        dialog.show()
     }
 
     private fun finishGame() {

@@ -12,8 +12,8 @@ class PokemonRepository{
     suspend fun randomPokemon(): Pokemon {
         return withContext(Dispatchers.IO) {
             try {
-                val lista = apiService.getPokemons()
-                lista.random()
+                val respuesta = apiService.getPokemons()
+                respuesta.pokemon.random()
             } catch (e: Exception) {
                 e.printStackTrace()
                 Pokemon(1,"Bulbassaur","http://www.serebii.net/pokemongo/pokemon/001.png")

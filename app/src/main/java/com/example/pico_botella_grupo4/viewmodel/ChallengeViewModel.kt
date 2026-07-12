@@ -40,10 +40,7 @@ class ChallengeViewModel(
         }
     }
 
-    fun getRandomChallenge() {
-
-        viewModelScope.launch {
-            repository.getRandomChallenge()
-        }
+    suspend fun getRandomChallenge(): Challenge? {
+        return repository.getRandomChallenge()
     }
 }
