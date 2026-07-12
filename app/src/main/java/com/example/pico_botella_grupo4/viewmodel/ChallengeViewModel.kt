@@ -39,4 +39,8 @@ class ChallengeViewModel(
             repository.delete(challenge)
         }
     }
+
+    suspend fun getRandomChallenge(): Challenge? {
+        return repository.getRandomChallenge()
+    }
 }
