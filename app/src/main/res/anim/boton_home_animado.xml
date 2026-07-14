@@ -1,19 +1,15 @@
-<set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:repeatCount="infinite"
-    android:repeatMode="reverse"
-    android:interpolator="@android:interpolator/accelerate_decelerate">
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
 
     <scale
-        android:duration="450"
-        android:fromXScale="0.65"
-        android:fromYScale="0.65"
-        android:toXScale="1.45"
-        android:toYScale="1.45"
+        android:duration="800"
+        android:fromXScale="1.0"
+        android:fromYScale="1.0"
+        android:toXScale="1.2"
+        android:toYScale="1.2"
         android:pivotX="50%"
-        android:pivotY="50%" />
+        android:pivotY="50%"
+        android:repeatCount="infinite"
+        android:repeatMode="reverse"/>
 
-    <alpha
-        android:duration="450"
-        android:fromAlpha="0.25"
-        android:toAlpha="1" />
 </set>

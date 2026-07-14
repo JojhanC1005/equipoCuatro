@@ -4,4 +4,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="orange">#FFFF5722</color>
     <color name="fondo_boton">#55FF5722</color>
+    <color name="black_grey">#414141</color>
+    <color name="green">#0A6A1D</color>
+    <color name="red">#9D0909</color>
+
+
 </resources>
