@@ -5,18 +5,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="20dp">
+    android:paddingStart="20dp"
+    android:paddingTop="20dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="50dp">
 
     <FrameLayout
         android:id="@+id/cardChallenge"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
+        android:layout_marginBottom="35dp"
         android:background="@drawable/dialog_background"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
         android:paddingTop="80dp"
-        android:paddingBottom="24dp"
+        android:paddingBottom="45dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -37,19 +41,6 @@
                 android:textSize="24sp"
                 android:lineSpacingExtra="4dp"/>
 
-            <Button
-                android:id="@+id/btnClose"
-                android:layout_width="160dp"
-                android:layout_height="55dp"
-                android:layout_marginTop="30dp"
-                android:text="Cerrar"
-                android:textAllCaps="false"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:backgroundTint="#F4511E"
-                app:cornerRadius="0dp"/>
-
         </LinearLayout>
 
     </FrameLayout>
@@ -66,5 +57,24 @@
         app:layout_constraintTop_toTopOf="@id/cardChallenge"
         app:layout_constraintStart_toStartOf="@id/cardChallenge"
         app:layout_constraintEnd_toEndOf="@id/cardChallenge"/>
+
+    <Button
+        android:id="@+id/btnClose"
+        android:layout_width="160dp"
+        android:layout_height="55dp"
+        android:text="Cerrar"
+        android:textAllCaps="false"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#F4511E"
+        android:elevation="30dp"
+        app:cornerRadius="0dp"
+
+        app:layout_constraintTop_toBottomOf="@id/cardChallenge"
+        app:layout_constraintStart_toStartOf="@id/cardChallenge"
+        app:layout_constraintEnd_toEndOf="@id/cardChallenge"
+
+        android:layout_marginTop="-27dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -459,12 +459,14 @@ class HomeFragment : Fragment() {
             finishGame()
         }
 
-        // Si el usuario presiona atrás o toca fuera del diálogo
-        dialog.setOnCancelListener {
-            finishGame()
-        }
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
 
         dialog.show()
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
     }
 
     private fun finishGame() {
